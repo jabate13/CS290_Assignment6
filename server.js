@@ -32,7 +32,8 @@ app.get('/',function(req,res,next){
   });
 });
 
-//Updating the databaseapp.get('/safe-update',function(req,res,next){
+//Updating the database
+app.get('/safe-update',function(req,res,next){
   var context = {};
   mysql.pool.query("SELECT * FROM todo WHERE id=?", [req.query.id], function(err, result){
     if(err){
