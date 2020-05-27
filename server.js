@@ -22,7 +22,7 @@ app.set('port', 4526);
 // Selecting the data
 app.get('/',function(req,res,next){
   var context = {};
-  mysql.pool.query('SELECT * FROM todo', function(err, rows, fields){
+  pool.query('SELECT * FROM todo', function(err, rows, fields){
     if(err){
       next(err);
       return;
@@ -35,14 +35,14 @@ app.get('/',function(req,res,next){
 //Updating the database
 app.get('/safe-update',function(req,res,next){
   var context = {};
-  mysql.pool.query("SELECT * FROM todo WHERE id=?", [req.query.id], function(err, result){
+  pool.query("SELECT * FROM todo WHERE id=?", [req.query.id], function(err, result){
     if(err){
       next(err);
       return;
     }
     if(result.length == 1){
       var curVals = result[0];
-      mysql.pool.query("UPDATE todo SET name=?, done=?, due=? WHERE id=? ",
+      pool.query("UPDATE todo SET name=?, done=?, due=? WHERE id=? ",
         [req.query.name || curVals.name, req.query.done || curVals.done, req.query.due || curVals.due, req.query.id],
         function(err, result){
         if(err){
