@@ -6,10 +6,10 @@ var handlebars = require('express-handlebars');
 // Connect to the database
 var mysql = require('mysql');
 var pool = mysql.createPool({
-  host : 'localhost',
-  user : 'student',
-  password : 'default',
-  database : 'student'
+  host : 'classmysql.engr.oregonstate.edu',
+  user : 'cs290_abatej',
+  password : '5225',
+  database : 'cs290_abatej'
 });
 
 app.use(express.static('public'));
