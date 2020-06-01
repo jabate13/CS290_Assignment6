@@ -1,7 +1,7 @@
 //Boilerplate stuffs
 var express = require('express');
 var app = express();
-var handlebars = require('express-handlebars');
+var CORS = require('cors');
 
 // Connect to the database
 var mysql = require('mysql');
@@ -13,73 +13,98 @@ var pool = mysql.createPool({
 });
 
 app.use(express.static('public'));
-app.engine('handlebars', handlebars());
 app.set('view engine', 'handlebars');
 app.set('port', 4526);
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(CORS());
+
+// Query Strings
+const selectQuery = 'SELECT * FROM workouts';
+const insertQuery = "INSERT INTO workouts (`name`, `reps`, `weight`, `lbs`, `date`) VALUES (?, ?, ?, ?, ?)";
+const updateQuery = "UPDATE workouts SET name=?, reps=?, weight=?, lbs=?, date=? WHERE id=? ";
+const deleteQuery = "DELETE FROM workouts WHERE id=?";
+const dropTableQuery = "DROP TABLE IF EXISTS workouts";
+const makeTableQuery = "CREATE TABLE workouts (" +
+                        "id INT PRIMARY KEY AUTO_INCREMENT," +
+                        "name VARCHAR(255) NOT NULL," +
+                        "reps INT," +
+                        "weight INT," +
+                        "lbs BOOLEAN," +
+                        "date DATE)";
 
 // Routing
+
+const getAllData = () => {
+    pool.query(selectQuery, function(err, rows, fields){
+      if (err) {
+        next(err);
+        return;
+      }
+      res.json({ rows: rows });
+    });
+};
+
 
 // Selecting the data
 app.get('/',function(req,res,next){
   var context = {};
-  pool.query('SELECT * FROM todo', function(err, rows, fields){
+  pool.query(selectQuery, function(err, rows, fields){
     if(err){
       next(err);
       return;
     }
-    context.results = JSON.stringify(rows);
-    res.render('home', context);
+    context.results = rows;
+    res.send(context);
   });
 });
 
 //Updating the database
-app.get('/safe-update',function(req,res,next){
+app.put('/',function(req,res,next){
   var context = {};
-  pool.query("SELECT * FROM todo WHERE id=?", [req.query.id], function(err, result){
+  var { name, reps, weight, lbs, date, id } = req.body; //Object destructuring
+  pool.query(updateQuery,
+    [name, reps, weight, lbs, date, id],
+    function(err, result){
     if(err){
       next(err);
       return;
     }
-    if(result.length == 1){
-      var curVals = result[0];
-      pool.query("UPDATE todo SET name=?, done=?, due=? WHERE id=? ",
-        [req.query.name || curVals.name, req.query.done || curVals.done, req.query.due || curVals.due, req.query.id],
-        function(err, result){
-        if(err){
-          next(err);
-          return;
-        }
-        context.results = "Updated " + result.changedRows + " rows.";
-        res.render('home',context);
-      });
-    }
+    getAllData();
   });
 });
-
 
 //Insert query
-app.get('/insert', function(req, res, next){
+app.post('/', function(req, res, next){
   var context = {};
-  pool.query("INSERT INTO todo (`name`) VALUES (?)", [req.query.c], function(err, result){
+  var { name, reps, weight, lbs, date } = req.body; //Object destructuring
+  pool.query(insertQuery, [name, reps, weight, lbs, date], function(err, result){
     if(err){
       next(err);
       return;
     }
-    context.results = "Inserted is " + result.insertId;
-    res.render('home', context);
+    getAllData();
   });
 });
+
+//DELETE
+app.delete('/', function(req, res, next){
+  var context = {};
+  var { id } = req.body;
+  pool.query(deleteQuery, [id], function(err, result){
+    if (err) {
+      next(err);
+      return;
+    }
+    getAllData();
+  })
+})
 
 // Empty the table
 app.get('/reset-table', function(req, res, next){
   var context = {};
-  pool.query("DROP TABLE IF EXISTS todo", function(err){
-    var createString = "CREATE TABLE todo (" +
-    "id INT PRIMARY KEY AUTO_INCREMENT," +
-    "name VARCHAR(255) NOT NULL," +
-    "done BOOLEAN," +
-    "due DATE)"
-    pool.query(createString, function(err){
+  pool.query(dropTableQuery, function(err){
+    pool.query(makeTableQuery, function(err){
       context.results = "Table reset";
     })
   });
