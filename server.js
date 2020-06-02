@@ -14,7 +14,7 @@ var pool = mysql.createPool({
 
 app.use(express.static('public'));
 app.set('view engine', 'handlebars');
-app.set('port', 4526);
+app.set('port', 4852);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(CORS());
@@ -35,7 +35,7 @@ const makeTableQuery = "CREATE TABLE workouts (" +
 
 // Routing
 
-const getAllData = () => {
+const getAllData = (req, res, next) => {
     pool.query(selectQuery, function(err, rows, fields){
       if (err) {
         next(err);
