@@ -41,7 +41,7 @@ const getAllData = (req, res, next) => {
         next(err);
         return;
       }
-      res.json({ rows: rows });
+      res.send(json({ rows: rows }));
     });
 };
 
@@ -83,7 +83,7 @@ app.post('/', function(req, res, next){
       next(err);
       return;
     }
-    //getAllData();
+    getAllData();
   });
 });
 
