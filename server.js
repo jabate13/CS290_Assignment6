@@ -70,7 +70,7 @@ app.put('/',function(req,res,next){
       next(err);
       return;
     }
-    getAllData();
+    //getAllData();
   });
 });
 
@@ -96,7 +96,7 @@ app.delete('/', function(req, res, next){
       next(err);
       return;
     }
-    getAllData();
+    //getAllData();
   })
 })
 
