@@ -83,7 +83,7 @@ app.post('/', function(req, res, next){
       next(err);
       return;
     }
-    getAllData();
+    //getAllData();
   });
 });
 
