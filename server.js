@@ -78,6 +78,8 @@ app.put('/',function(req,res,next){
 app.post('/', function(req, res, next){
   var context = {};
   var { name, reps, weight, lbs, date } = req.body; //Object destructuring
+  
+  console.log(name, reps, weight, lbs, date);
   pool.query(insertQuery, [name, reps, weight, lbs, date], function(err, result){
     if(err){
       next(err);
