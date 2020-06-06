@@ -71,6 +71,7 @@ app.put('/',function(req,res,next){
       return;
     }
     //getAllData();
+	res.send(context);
   });
 });
 
@@ -86,6 +87,7 @@ app.post('/', function(req, res, next){
       return;
     }
     //getAllData();
+	res.send(context);
   });
 });
 
@@ -99,6 +101,7 @@ app.delete('/', function(req, res, next){
       return;
     }
     //getAllData();
+	res.send(context);
   })
 })
 
